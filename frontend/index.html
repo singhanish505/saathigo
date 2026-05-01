@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SaathiGo · Aapki Apni Sawaari</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://tile.openstreetmap.org" />
+  <style>
+    :root {
+      --saffron:#FF7A1A; --saffron-dark:#C2410C;
+      --deep:#0E2A47; --deep-lt:#163E66;
+      --teal:#00A896; --pink:#E91E63; --green:#28A745;
+      --bg:#F4F1EC; --card:#FFFFFF; --text:#1B1F2A; --muted:#6B7280; --line:#E6E2DA;
+    }
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #root { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+    .leaflet-container { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

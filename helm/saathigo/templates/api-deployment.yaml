@@ -1,0 +1,33 @@
+{{- if .Values.api.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "saathigo.api.fullname" . }}
+  labels: {{- include "saathigo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels: {{- include "saathigo.api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "saathigo.api.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.global.image.registry }}/{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          ports: [{ containerPort: 4000, name: http }]
+          env:
+            {{- range $k, $v := .Values.api.env }}
+            - { name: {{ $k }}, value: "{{ $v }}" }
+            {{- end }}
+            - name: REDIS_URL
+              valueFrom: { secretKeyRef: { name: {{ .Values.api.secretsRef }}, key: redis_url } }
+            - name: DATABASE_URL
+              valueFrom: { secretKeyRef: { name: {{ .Values.api.secretsRef }}, key: database_url } }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: {{ .Values.api.secretsRef }}, key: jwt_secret } }
+          resources: {{- toYaml .Values.api.resources | nindent 12 }}
+          readinessProbe: { httpGet: { path: /readyz, port: 4000 }, periodSeconds: 5 }
+          livenessProbe:  { httpGet: { path: /healthz, port: 4000 }, periodSeconds: 15 }
+{{- end -}}

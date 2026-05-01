@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: saathigo
+  labels:
+    name: saathigo
+    app.kubernetes.io/managed-by: argocd

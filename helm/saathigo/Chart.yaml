@@ -1,0 +1,12 @@
+apiVersion: v2
+name: saathigo
+description: SaathiGo - India's first driver-owned EV-first e-hailing co-operative
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+icon: https://saathigo.in/logo.png
+keywords: [mobility, e-hailing, india, ev]
+home: https://saathigo.in
+maintainers:
+  - name: Anish
+    email: hello@saathigo.in

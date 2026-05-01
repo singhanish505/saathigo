@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saathigo-frontend
+  namespace: saathigo
+spec:
+  replicas: 4
+  selector: { matchLabels: { app: saathigo-frontend } }
+  template:
+    metadata:
+      labels: { app: saathigo-frontend }
+    spec:
+      containers:
+        - name: frontend
+          image: ghcr.io/saathigo/frontend:latest
+          ports: [{ containerPort: 5173 }]
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saathigo-frontend
+  namespace: saathigo
+spec:
+  type: ClusterIP
+  selector: { app: saathigo-frontend }
+  ports: [{ port: 80, targetPort: 5173 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: saathigo
+  namespace: saathigo
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: ["app.saathigo.in", "api.saathigo.in"]
+      secretName: saathigo-tls
+  rules:
+    - host: app.saathigo.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: saathigo-frontend, port: { number: 80 } } }
+    - host: api.saathigo.in
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: saathigo-api, port: { number: 80 } } }

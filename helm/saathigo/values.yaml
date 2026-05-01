@@ -1,0 +1,46 @@
+global:
+  image:
+    registry: ghcr.io/saathigo
+    pullPolicy: IfNotPresent
+  hosts:
+    api: api.saathigo.in
+    app: app.saathigo.in
+
+api:
+  enabled: true
+  image: { repository: api, tag: latest }
+  replicas: 6
+  hpa:
+    enabled: true
+    min: 6
+    max: 200
+    cpuTarget: 60
+    wsConnsPerPod: 25000
+  resources:
+    requests: { cpu: 250m, memory: 256Mi }
+    limits:   { cpu: 1500m, memory: 1Gi }
+  env:
+    NODE_ENV: production
+    LOG_LEVEL: info
+    MOCK_MODE: "false"
+  secretsRef: saathigo-secrets
+
+frontend:
+  enabled: true
+  image: { repository: frontend, tag: latest }
+  replicas: 4
+
+ingress:
+  enabled: true
+  className: nginx
+  tls: true
+
+redis:
+  external: true
+  endpoint: saathigo-redis-cluster.saathigo.svc.cluster.local
+postgres:
+  external: true
+  endpoint: saathigo-postgres.saathigo.svc.cluster.local
+kafka:
+  external: true
+  bootstrapServers: kafka.saathigo.svc.cluster.local:9092

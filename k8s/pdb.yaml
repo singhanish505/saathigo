@@ -1,0 +1,14 @@
+# Pod Disruption Budgets - keep at least 75% of pods up during voluntary disruptions.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: saathigo-api, namespace: saathigo }
+spec:
+  minAvailable: 75%
+  selector: { matchLabels: { app: saathigo-api } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: saathigo-frontend, namespace: saathigo }
+spec:
+  minAvailable: 50%
+  selector: { matchLabels: { app: saathigo-frontend } }
