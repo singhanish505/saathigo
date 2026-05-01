@@ -26,6 +26,169 @@
 }
 .city-chip:hover { background: rgba(255,255,255,0.22); }
 
+/* Location picker popover */
+.loc-picker {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 300px; background: #fff; border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18); z-index: 600;
+  overflow: hidden; border: 1px solid var(--line);
+  padding: 10px 0 6px;
+}
+.loc-search-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 10px 8px; border-bottom: 1px solid var(--line);
+}
+.loc-search-icon { font-size: 14px; flex-shrink: 0; opacity: 0.5; }
+.loc-search {
+  flex: 1; border: none; outline: none; font-size: 13px;
+  background: transparent; color: var(--text);
+}
+.loc-clear {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 12px; padding: 0 2px;
+}
+.loc-gps {
+  display: flex; align-items: center; gap: 6px;
+  width: calc(100% - 20px); margin: 8px 10px 4px;
+  padding: 8px 12px; border-radius: 10px; border: 1.5px dashed var(--saffron);
+  background: #fff7ed; color: var(--saffron-dark); font-size: 12px;
+  cursor: pointer; font-weight: 600; text-align: left;
+}
+.loc-gps:disabled { opacity: 0.6; cursor: default; }
+.loc-gps.error { border-color: #F87171; background: #FEF2F2; color: #B91C1C; }
+.loc-spinner {
+  width: 12px; height: 12px; border: 2px solid var(--saffron);
+  border-top-color: transparent; border-radius: 50%;
+  display: inline-block; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loc-scroll { max-height: 280px; overflow-y: auto; }
+.loc-section {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted); padding: 8px 14px 4px;
+}
+.loc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; cursor: pointer; transition: background 0.1s;
+}
+.loc-item:hover { background: #FFF7ED; }
+.loc-item.active { background: #FFEDD5; }
+.loc-item-icon { font-size: 14px; flex-shrink: 0; }
+.loc-item-label { flex: 1; font-size: 13px; color: var(--text); }
+.loc-tier {
+  font-size: 10px; color: var(--muted);
+  background: #F3F4F6; border-radius: 4px; padding: 1px 5px;
+  flex-shrink: 0;
+}
+.loc-tier.live {
+  color: #059669; background: #D1FAE5;
+}
+.loc-empty { padding: 16px 14px; font-size: 13px; color: var(--muted); text-align: center; }
+
+/* ── Voice Booking ─────────────────────────────────────── */
+.voice-btn {
+  background: none; border: 1.5px solid var(--saffron); border-radius: 20px;
+  color: var(--saffron-dark); font-size: 12px; font-weight: 700;
+  padding: 3px 10px; cursor: pointer; transition: background 0.15s;
+  white-space: nowrap;
+}
+.voice-btn:hover { background: #FFF7ED; }
+.voice-unsupported { font-size: 11px; color: var(--muted); }
+
+.voice-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.45);
+  display: flex; align-items: flex-end; justify-content: center;
+  z-index: 900;
+}
+.voice-modal {
+  background: #fff; border-radius: 24px 24px 0 0;
+  width: 100%; max-width: 480px;
+  padding: 28px 24px 44px;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  animation: voice-slide-up 0.22s ease;
+}
+@keyframes voice-slide-up {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.voice-ring {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+  border: 3px solid var(--saffron);
+  display: flex; align-items: center; justify-content: center;
+  animation: voice-pulse 1.4s ease-in-out infinite;
+}
+.voice-ring.error {
+  background: #FEF2F2; border-color: #F87171; animation: none;
+}
+@keyframes voice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.35); }
+  50%       { box-shadow: 0 0 0 18px rgba(249,115,22,0); }
+}
+.voice-ring-icon { font-size: 30px; }
+
+.voice-status {
+  font-size: 16px; font-weight: 700; color: var(--deep);
+}
+.voice-interim {
+  font-size: 13px; color: var(--muted); font-style: italic;
+  text-align: center; min-height: 20px;
+}
+
+.voice-heard-block {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%;
+}
+.voice-heard-label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px;
+}
+.voice-transcript {
+  font-size: 14px; color: var(--text); font-style: italic; text-align: center;
+}
+
+.voice-match-box {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: #FFF7ED; border: 1.5px solid #FED7AA;
+  border-radius: 14px; padding: 14px 16px; width: 100%;
+}
+.voice-match-pin { font-size: 22px; margin-top: 2px; }
+.voice-match-info { flex: 1; }
+.voice-found-label {
+  font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.voice-match-name { font-size: 16px; font-weight: 700; color: var(--deep); margin-top: 2px; }
+.voice-match-city { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.voice-ride-tag   { font-size: 11px; color: #059669; font-weight: 600; margin-top: 4px; }
+
+.voice-no-match { font-size: 14px; color: #6B7280; }
+.voice-tip {
+  font-size: 12px; color: var(--muted); text-align: center;
+  background: #F9FAFB; border-radius: 10px; padding: 9px 14px; width: 100%;
+}
+
+.voice-actions {
+  display: flex; gap: 10px; width: 100%;
+}
+.voice-confirm-btn {
+  flex: 1; padding: 13px; border-radius: 13px; border: none; cursor: pointer;
+  background: linear-gradient(95deg, var(--saffron), var(--saffron-dark));
+  color: #fff; font-weight: 700; font-size: 14px;
+}
+.voice-retry-btn {
+  padding: 13px 20px; border-radius: 13px;
+  border: 1.5px solid var(--saffron); background: #fff;
+  color: var(--saffron-dark); font-weight: 600; font-size: 14px; cursor: pointer;
+}
+.voice-retry-btn.full { flex: 1; }
+.voice-cancel-btn {
+  padding: 11px 26px; border-radius: 13px; border: 1.5px solid var(--line);
+  background: #fff; color: var(--muted); font-size: 13px; cursor: pointer;
+}
+.voice-cancel-btn-sm {
+  padding: 11px 16px; border-radius: 13px; border: 1.5px solid var(--line);
+  background: #fff; color: var(--muted); font-size: 13px; cursor: pointer;
+}
+
 .health {
   font-size: 11px; padding: 4px 10px; border-radius: 999px;
   background: rgba(255,255,255,0.12);

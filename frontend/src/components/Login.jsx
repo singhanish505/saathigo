@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { api } from '../api.js';
+import { useLang } from '../LangContext.jsx';
 
 export default function Login({ onLogin, flashToast }) {
+  const { t } = useLang();
   const [phone, setPhone] = useState('+919876543210');
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('Anish');
   const [devOtp, setDevOtp] = useState(null);
-  const [stage, setStage] = useState('phone'); // phone | otp
+  const [stage, setStage] = useState('phone');
   const [busy, setBusy] = useState(false);
 
   const requestOtp = async () => {
@@ -15,7 +17,7 @@ export default function Login({ onLogin, flashToast }) {
       const r = await api.requestOtp(phone);
       setDevOtp(r.dev_otp);
       setStage('otp');
-      flashToast('OTP sent. (Dev OTP shown below.)');
+      flashToast(t('otp_sent'));
     } catch (e) { flashToast(e.message); }
     setBusy(false);
   };
@@ -31,23 +33,23 @@ export default function Login({ onLogin, flashToast }) {
 
   return (
     <div className="login-wrap">
-      <h2>Login to SaathiGo</h2>
-      <p>India's first driver-owned, EV-first e-hailing co-operative.</p>
+      <h2>{t('login_title')}</h2>
+      <p>{t('login_subtitle')}</p>
 
       {stage === 'phone' && (
         <>
           <input
-            placeholder="Phone (+91XXXXXXXXXX)"
+            placeholder={t('phone_ph')}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
           <input
-            placeholder="Your name"
+            placeholder={t('name_ph')}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
           <button className="btn" disabled={busy || !phone} onClick={requestOtp}>
-            {busy ? 'Sending OTP…' : 'Send OTP'}
+            {busy ? t('sending_otp') : t('send_otp')}
           </button>
         </>
       )}
@@ -56,20 +58,20 @@ export default function Login({ onLogin, flashToast }) {
         <>
           {devOtp && (
             <div className="dev-otp">
-              <strong>Dev OTP:</strong> {devOtp} <span style={{ float: 'right' }}>(visible in dev only)</span>
+              <strong>{t('dev_otp_label')}</strong> {devOtp} <span style={{ float: 'right' }}>{t('dev_otp_note')}</span>
             </div>
           )}
           <input
-            placeholder="6-digit OTP"
+            placeholder={t('otp_ph')}
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             maxLength={6}
           />
           <button className="btn" disabled={busy} onClick={verify}>
-            {busy ? 'Verifying…' : 'Verify & Login'}
+            {busy ? t('verifying') : t('verify_login')}
           </button>
           <div style={{ marginTop: 12, fontSize: 12, color: '#6B7280', textAlign: 'center' }}>
-            <a style={{ color: '#FF7A1A', cursor: 'pointer' }} onClick={() => setStage('phone')}>← Change phone</a>
+            <a style={{ color: '#FF7A1A', cursor: 'pointer' }} onClick={() => setStage('phone')}>{t('change_phone')}</a>
           </div>
         </>
       )}

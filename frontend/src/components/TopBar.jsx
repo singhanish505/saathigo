@@ -1,33 +1,36 @@
 import React from 'react';
+import { useLang } from '../LangContext.jsx';
+import LocationPicker from './LocationPicker.jsx';
 
-export default function TopBar({ user, city, cities, onChangeCity, health, onLogout }) {
-  const cycle = () => {
-    if (!cities.length) return;
-    const idx = cities.findIndex(c => c.code === city.code);
-    onChangeCity(cities[(idx + 1) % cities.length].code);
-  };
+export default function TopBar({ user, city, cities, onChangeCity, onSelectPickup, health, onLogout }) {
+  const { t } = useLang();
   return (
     <div className="topbar">
       <div className="brand">
         <div className="logo">सा</div>
         <div>
           <h1>SaathiGo</h1>
-          <small>Aapki Apni Sawaari · Your Companion Ride</small>
+          <small>{t('tagline')}</small>
         </div>
       </div>
       <div className="topnav">
-        <a>Rides</a>
-        <a>Sakhi Mode</a>
-        <a>Hara Ride</a>
-        <a>Sahkari Wallet</a>
-        {user && <a onClick={onLogout}>Sign out</a>}
+        <a>{t('nav_rides')}</a>
+        <a>{t('nav_sakhi')}</a>
+        <a>{t('nav_hara')}</a>
+        <a>{t('nav_wallet')}</a>
+        {user && <a onClick={onLogout}>{t('sign_out')}</a>}
       </div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <span className="health" title={health.healthy ? 'API healthy' : 'API down'}>
+        <span className="health" title={health.healthy ? t('api_healthy', { mode: health.mode }) : t('api_down')}>
           <span className={`dot ${health.healthy ? 'ok' : 'bad'}`}></span>
-          {health.healthy ? `API ${health.mode}` : 'API down'}
+          {health.healthy ? t('api_healthy', { mode: health.mode }) : t('api_down')}
         </span>
-        <div className="city-chip" onClick={cycle}>📍 {city.name}</div>
+        <LocationPicker
+          cities={cities}
+          city={city}
+          onChangeCity={onChangeCity}
+          onSelectPickup={onSelectPickup}
+        />
       </div>
     </div>
   );

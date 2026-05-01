@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { io } from 'socket.io-client';
+import { useLang } from '../LangContext.jsx';
 
 // Helper to make a colored car DivIcon
 function carIcon(type, matched = false) {
@@ -17,6 +18,7 @@ const pickupIcon = L.divIcon({
 });
 
 export default function LiveMap({ city, drivers, filter, setFilter, pickup, matched, onSos, onShareFamily }) {
+  const { t } = useLang();
   const mapRef = useRef(null);
   const containerRef = useRef(null);
   const markersRef = useRef(new Map()); // driverId -> Leaflet marker
@@ -121,7 +123,7 @@ export default function LiveMap({ city, drivers, filter, setFilter, pickup, matc
   };
 
   const filters = [
-    { id: 'all',   label: 'All Cabs' },
+    { id: 'all',   label: t('all_cabs') },
     { id: 'ev',    label: '⚡ EV' },
     { id: 'sakhi', label: '👩 Sakhi' },
     { id: 'pool',  label: '🌸 Pool' },
@@ -167,15 +169,15 @@ export default function LiveMap({ city, drivers, filter, setFilter, pickup, matc
           </div>
           <div className="eta-row">
             <div className="eta">
-              Arriving in <strong>{matched.ride.etaMin} min</strong>
+              <strong>{t('arriving_in', { n: matched.ride.etaMin })}</strong>
               <span style={{ color: 'var(--muted)', marginLeft: 6 }}>
-                · {matched.ride.distanceToPickupKm} km away
+                · {t('km_away', { n: matched.ride.distanceToPickupKm })}
               </span>
             </div>
             <div className="actions">
-              <button className="btn-icon" title="Share live location with family" onClick={onShareFamily}>📡</button>
-              <button className="btn-icon" title="Call driver">📞</button>
-              <button className="btn-icon btn-sos" title="SOS — Police + Family alert" onClick={onSos}>SOS</button>
+              <button className="btn-icon" title={t('share_family')} onClick={onShareFamily}>📡</button>
+              <button className="btn-icon" title={t('call_driver')}>📞</button>
+              <button className="btn-icon btn-sos" title={t('sos_label')} onClick={onSos}>SOS</button>
             </div>
           </div>
         </div>

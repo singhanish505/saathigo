@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api, setToken, clearToken } from './api.js';
+import { useLang } from './LangContext.jsx';
 import Login from './components/Login.jsx';
 import TopBar from './components/TopBar.jsx';
 import BookingPanel from './components/BookingPanel.jsx';
@@ -9,6 +10,7 @@ import Toast from './components/Toast.jsx';
 import RideConfirmModal from './components/RideConfirmModal.jsx';
 
 export default function App() {
+  const { t } = useLang();
   const [user, setUser] = useState(null);
   const [bootError, setBootError] = useState(null);
   const [cities, setCities] = useState([]);
@@ -71,14 +73,14 @@ export default function App() {
   const onLogin = async (token, user) => {
     setToken(token);
     setUser(user);
-    flashToast(`Namaste ${user.name}! Welcome to SaathiGo.`);
+    flashToast(t('welcome_toast', { name: user.name }));
   };
 
   const onLogout = () => {
     clearToken();
     setUser(null);
     setMatched(null);
-    flashToast('Signed out.');
+    flashToast(t('signed_out'));
   };
 
   const onChangeCity = (code) => {
@@ -86,17 +88,21 @@ export default function App() {
     setCity(next);
     setPickup({ lat: next.center[0], lng: next.center[1], label: `${next.name} Centre` });
     setDrop({ lat: next.center[0] + 0.05, lng: next.center[1] + 0.05, label: `${next.name} Outskirts` });
-    flashToast(`Switched to ${next.name}${next.tier === 'tier2' ? ' · Tier-2/3 mode active' : ''}`);
+    flashToast(t('switched_city', { city: next.name }) + (next.tier === 'tier2' ? ' · ' + t('tier2_note') : ''));
+  };
+
+  const onSelectPickup = (loc) => {
+    setPickup(loc);
   };
 
   const onBook = async () => {
-    if (!user) { flashToast('Please log in first.'); return; }
+    if (!user) { flashToast(t('login_first')); return; }
     try {
       const res = await api.bookRide(city.code, pickup, drop, rideType);
       setMatched(res);
-      flashToast('Ride booked! Driver on the way.');
+      flashToast(t('ride_booked'));
     } catch (e) {
-      flashToast('Could not book: ' + e.message);
+      flashToast(t('could_not_book', { msg: e.message }));
     }
   };
 
@@ -104,9 +110,9 @@ export default function App() {
     if (!matched) return;
     try {
       const r = await api.sos(matched.ride.id, pickup.lat, pickup.lng);
-      flashToast(`SOS raised. Incident ID: ${r.incident.id}. Family + ops + police notified.`);
+      flashToast(t('sos_raised', { id: r.incident.id }));
     } catch (e) {
-      flashToast('SOS failed: ' + e.message);
+      flashToast(t('sos_failed', { msg: e.message }));
     }
   };
 
@@ -115,9 +121,9 @@ export default function App() {
     try {
       const r = await api.familyLink(matched.ride.id);
       navigator.clipboard?.writeText(r.url);
-      flashToast('Family-tracker link copied to clipboard.');
+      flashToast(t('family_copied'));
     } catch (e) {
-      flashToast('Could not generate link: ' + e.message);
+      flashToast(t('family_failed', { msg: e.message }));
     }
   };
 
@@ -136,7 +142,7 @@ export default function App() {
   if (!user) {
     return (
       <>
-        <TopBar user={null} city={city} cities={cities} onChangeCity={onChangeCity} health={health} onLogout={onLogout} />
+        <TopBar user={null} city={city} cities={cities} onChangeCity={onChangeCity} onSelectPickup={onSelectPickup} health={health} onLogout={onLogout} />
         <Login onLogin={onLogin} flashToast={flashToast} />
         <Toast toast={toast} />
       </>
@@ -145,7 +151,7 @@ export default function App() {
 
   return (
     <>
-      <TopBar user={user} city={city} cities={cities} onChangeCity={onChangeCity} health={health} onLogout={onLogout} />
+      <TopBar user={user} city={city} cities={cities} onChangeCity={onChangeCity} onSelectPickup={onSelectPickup} health={health} onLogout={onLogout} />
       <div className="app">
         <div className="panel left">
           <BookingPanel
